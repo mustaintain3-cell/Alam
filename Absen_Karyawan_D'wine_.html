@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Absensi Terapis | D'WINE FAMILY REFLEXOLOGY</title>
+<style>
+  :root { --wine:#6d1838; --wine2:#8c244b; --gold:#d9b66f; --bg:#f7f4f5; --ink:#282329; --muted:#716970; --green:#16794b; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:Arial,Helvetica,sans-serif; background:var(--bg); color:var(--ink); }
+  header { background:linear-gradient(135deg,var(--wine),#351020); color:white; padding:26px 16px 24px; text-align:center; border-bottom:4px solid var(--gold); }
+  header .mark { font-size:12px; letter-spacing:3px; color:#f0d9a8; font-weight:bold; }
+  h1 { font-size:23px; margin:9px 0 6px; line-height:1.25; }
+  header p { margin:0; font-size:13px; color:#f4e9ee; }
+  main { width:min(760px,100%); margin:0 auto; padding:16px 12px 34px; }
+  .clockbox { background:white; border-radius:14px; padding:16px; text-align:center; box-shadow:0 3px 12px #35102010; margin-bottom:15px; }
+  .today { color:var(--muted); font-size:13px; }
+  .now { font-size:25px; font-weight:800; color:var(--wine); margin-top:5px; font-variant-numeric:tabular-nums; }
+  .summary { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:17px; }
+  .stat { background:white; border-radius:12px; padding:12px 6px; text-align:center; box-shadow:0 2px 8px #3510200a; }
+  .stat strong { display:block; font-size:23px; color:var(--wine); }
+  .stat span { font-size:11px; color:var(--muted); }
+  .group { margin:16px 0; }
+  .group h2 { font-size:16px; margin:0 0 9px; display:flex; align-items:center; gap:8px; }
+  .group h2:before { content:""; width:5px; height:20px; background:var(--gold); border-radius:5px; }
+  .person { display:flex; align-items:center; gap:11px; background:white; border:1px solid #eee5e9; border-radius:12px; padding:12px; margin-bottom:8px; }
+  .person input { width:23px; height:23px; accent-color:var(--green); flex:0 0 auto; cursor:pointer; }
+  .person label { flex:1; cursor:pointer; min-width:0; }
+  .name { display:block; font-weight:700; font-size:15px; }
+  .detail { display:block; color:var(--muted); font-size:12px; margin-top:4px; }
+  .status { font-size:11px; font-weight:bold; padding:6px 8px; border-radius:20px; background:#f1edf0; color:#756b72; white-space:nowrap; }
+  .person.present { border-color:#b9e3cd; background:#f5fff9; }
+  .person.present .status { background:#dff5e9; color:var(--green); }
+  .person.present .name { color:#155e3d; }
+  .actions { display:flex; flex-wrap:wrap; gap:8px; margin-top:20px; }
+  button { border:0; border-radius:10px; padding:12px 15px; font-weight:bold; cursor:pointer; font-size:13px; }
+  .primary { background:var(--wine); color:white; flex:1; }
+  .secondary { background:white; color:var(--wine); border:1px solid #d9c5ce; }
+  .warning { background:#fff0f0; color:#a32828; }
+  .note { font-size:12px; line-height:1.5; color:var(--muted); background:#fff9eb; border:1px solid #f1dfb2; padding:12px; border-radius:10px; margin-top:15px; }
+  .history { margin-top:22px; background:white; padding:14px; border-radius:12px; }
+  .history h2 { font-size:16px; margin:0 0 10px; }
+  .history table { width:100%; border-collapse:collapse; font-size:12px; }
+  .history th,.history td { padding:8px 5px; border-bottom:1px solid #eee; text-align:left; vertical-align:top; }
+  .history th { color:var(--muted); }
+  .empty { color:var(--muted); font-size:13px; }
+  footer { text-align:center; color:var(--muted); font-size:11px; padding:8px 10px 20px; }
+  @media(min-width:600px) { h1{font-size:28px} .people-grid { display:grid; grid-template-columns:1fr 1fr; gap:0 12px; } }
+  @media print { .actions,.note,footer {display:none} body{background:white} }
+</style>
+</head>
+<body>
+<header>
+  <div class="mark">D'WINE FAMILY</div>
+  <h1>ABSENSI TERAPIS</h1>
+  <p>REFLEXOLOGY • DURI</p>
+</header>
+<main>
+  <section class="clockbox">
+    <div class="today" id="today">Memuat tanggal…</div>
+    <div class="now" id="now">--:--:--</div>
+    <div class="today">Waktu mengikuti jam pada perangkat ini</div>
+  </section>
+  <section class="summary" aria-label="Ringkasan absensi">
+    <div class="stat"><strong id="total">10</strong><span>Total Terapis</span></div>
+    <div class="stat"><strong id="present">0</strong><span>Sudah Absen</span></div>
+    <div class="stat"><strong id="missing">10</strong><span>Belum Absen</span></div>
+  </section>
+
+  <div class="group">
+    <h2>Terapis Laki-laki</h2>
+    <div id="male"></div>
+  </div>
+  <div class="group">
+    <h2>Terapis Perempuan</h2>
+    <div id="female"></div>
+  </div>
+  <div class="group">
+    <h2>Kasir</h2>
+    <div id="cashier"></div>
+  </div>
+
+  <div class="actions">
+    <button class="primary" onclick="downloadCSV()">Unduh Rekap CSV</button>
+    <button class="secondary" onclick="window.print()">Cetak</button>
+    <button class="warning" onclick="resetAttendance()">Reset Absensi Hari Ini</button>
+  </div>
+  <div class="note">
+    <strong>Catatan:</strong> Waktu absen dicatat otomatis saat kotak centang dipilih. Data tersimpan di browser/perangkat ini. Gunakan perangkat dan browser yang sama agar data tetap tersedia. Atur tanggal dan jam HP dengan benar. Unduh rekap secara berkala sebagai cadangan.
+  </div>
+
+  <section class="history">
+    <h2>Rekap Absensi Hari Ini</h2>
+    <div id="tableWrap" class="empty">Belum ada terapis yang absen.</div>
+  </section>
+</main>
+<footer>D'WINE FAMILY REFLEXOLOGY • Sistem Absensi Terapis</footer>
+<script>
+const therapists = [
+  {name:"Pak Alam", gender:"male"},
+  {name:"Pak Alkan", gender:"male"},
+  {name:"Pak Amron", gender:"male"},
+  {name:"Siti", gender:"female"},
+  {name:"Mega", gender:"female"},
+  {name:"Lina", gender:"female"},
+  {name:"Diana", gender:"female"},
+  {name:"Viola", gender:"female"},
+  {name:"Ida", gender:"female"},
+  {name:"Buk Marni", gender:"female"},
+  {name:"Olivia", gender:"cashier"}
+];
+const STORE_KEY = "dwine_absensi_terapis_v1";
+let records = {};
+function localDateKey(date = new Date()) {
+  return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,"0")}-${String(date.getDate()).padStart(2,"0")}`;
+}
+function formatDate(date) {
+  return new Intl.DateTimeFormat("id-ID",{weekday:"long",day:"numeric",month:"long",year:"numeric"}).format(date);
+}
+function formatTime(date) {
+  return new Intl.DateTimeFormat("id-ID",{hour:"2-digit",minute:"2-digit",second:"2-digit",hour12:false}).format(date);
+}
+function loadRecords() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(STORE_KEY) || "{}");
+    records = saved.date === localDateKey() ? (saved.records || {}) : {};
+  } catch(e) { records = {}; }
+}
+function saveRecords() {
+  localStorage.setItem(STORE_KEY, JSON.stringify({date:localDateKey(), records}));
+}
+function renderPeople() {
+  ["male","female","cashier"].forEach(group => {
+    const list = document.getElementById(group);
+    list.innerHTML = "";
+    therapists.filter(t => t.gender === group).forEach((t,index) => {
+      const id = "therapist_" + therapists.indexOf(t);
+      const rec = records[t.name];
+      const card = document.createElement("div");
+      card.className = "person" + (rec ? " present" : "");
+      card.innerHTML = `
+        <input type="checkbox" id="${id}" ${rec ? "checked" : ""} aria-label="Absen ${t.name}">
+        <label for="${id}">
+          <span class="name">${t.name}</span>
+          <span class="detail">${rec ? `Absen: ${rec.date} • ${rec.time}` : "Belum melakukan absensi"}</span>
+        </label>
+        <span class="status">${rec ? "HADIR" : "BELUM ABSEN"}</span>`;
+      card.querySelector("input").addEventListener("change", (event) => {
+        if (event.target.checked) {
+          if (!records[t.name]) {
+            const now = new Date();
+            records[t.name] = {date:formatDate(now), time:formatTime(now), iso:now.toISOString()};
+          }
+        } else {
+          if (!confirm(`Batalkan absensi ${t.name}?`)) {
+            event.target.checked = true;
+            return;
+          }
+          delete records[t.name];
+        }
+        saveRecords();
+        renderPeople();
+        renderSummary();
+        renderTable();
+      });
+      list.appendChild(card);
+    });
+  });
+}
+function renderSummary() {
+  const count = Object.keys(records).length;
+  document.getElementById("total").textContent = therapists.length;
+  document.getElementById("present").textContent = count;
+  document.getElementById("missing").textContent = therapists.length-count;
+}
+function renderTable() {
+  const present = therapists.filter(t => records[t.name]);
+  const wrap = document.getElementById("tableWrap");
+  if (!present.length) { wrap.className="empty"; wrap.textContent="Belum ada terapis yang absen."; return; }
+  wrap.className="";
+  let html = '<table><thead><tr><th>Nama</th><th>Tanggal</th><th>Jam Absen</th></tr></thead><tbody>';
+  present.forEach(t => {
+    html += `<tr><td>${t.name}</td><td>${records[t.name].date}</td><td>${records[t.name].time}</td></tr>`;
+  });
+  wrap.innerHTML = html + "</tbody></table>";
+}
+function tick() {
+  const now = new Date();
+  document.getElementById("today").textContent = formatDate(now);
+  document.getElementById("now").textContent = formatTime(now);
+  // Start a fresh attendance list when the device date changes.
+  if (window.currentDateKey && window.currentDateKey !== localDateKey()) {
+    loadRecords(); renderPeople(); renderSummary(); renderTable();
+  }
+  window.currentDateKey = localDateKey();
+}
+function resetAttendance() {
+  if (!confirm("Yakin reset semua absensi hari ini? Tindakan ini tidak bisa dibatalkan.")) return;
+  records = {};
+  saveRecords();
+  renderPeople(); renderSummary(); renderTable();
+}
+function downloadCSV() {
+  const rows = [["Nama Terapis","Jenis Kelamin","Tanggal Absen","Jam Absen","Status"]];
+  therapists.forEach(t => {
+    const r = records[t.name];
+    rows.push([t.name,t.gender==="male"?"Laki-laki":(t.gender==="female"?"Perempuan":"Kasir"),r?r.date:"-",r?r.time:"-",r?"Hadir":"Belum absen"]);
+  });
+  const csv = "\uFEFF" + rows.map(row => row.map(v => `"${String(v).replace(/"/g,'""')}"`).join(",")).join("\r\n");
+  const blob = new Blob([csv],{type:"text/csv;charset=utf-8;"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = `absensi-dwine-${localDateKey()}.csv`;
+  document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+}
+loadRecords();
+tick();
+renderPeople(); renderSummary(); renderTable();
+setInterval(tick,1000);
+</script>
+</body>
+</html>
