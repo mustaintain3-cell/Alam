@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Absensi Pulang | D'WINE FAMILY REFLEXOLOGY</title>
+<style>
+:root{--wine:#6d1838;--wine2:#8c244b;--gold:#d9b66f;--bg:#f7f4f5;--ink:#282329;--muted:#716970;--green:#16794b}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--ink)}
+header{background:linear-gradient(135deg,var(--wine),#351020);color:white;text-align:center;padding:25px 14px 22px;border-bottom:4px solid var(--gold)}
+.brand{font-size:12px;letter-spacing:3px;color:#f0d9a8;font-weight:bold}
+h1{font-size:24px;margin:9px 0 5px}
+header p{font-size:13px;margin:0;color:#f4e9ee}
+main{width:min(760px,100%);margin:auto;padding:15px 12px 30px}
+.clock{background:white;border-radius:14px;padding:16px;text-align:center;margin-bottom:14px;box-shadow:0 3px 12px #35102010}
+.date{font-size:13px;color:var(--muted)}.time{font-size:27px;font-weight:800;color:var(--wine);margin:5px 0;font-variant-numeric:tabular-nums}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:17px}
+.stat{background:white;border-radius:12px;text-align:center;padding:12px 5px}.stat strong{display:block;color:var(--wine);font-size:23px}.stat span{font-size:11px;color:var(--muted)}
+.group{margin:17px 0}.group h2{font-size:16px;margin:0 0 9px;display:flex;gap:8px;align-items:center}.group h2:before{content:"";width:5px;height:20px;background:var(--gold);border-radius:5px}
+.person{display:flex;align-items:center;gap:11px;background:white;border:1px solid #eee5e9;border-radius:12px;padding:12px;margin-bottom:8px}
+.person input{width:23px;height:23px;accent-color:var(--green);flex-shrink:0}
+.person label{flex:1;min-width:0;cursor:pointer}.name{display:block;font-weight:bold;font-size:15px}.detail{display:block;color:var(--muted);font-size:12px;margin-top:4px}
+.status{font-size:11px;font-weight:bold;padding:6px 8px;border-radius:20px;background:#f1edf0;color:#756b72;white-space:nowrap}
+.person.present{border-color:#b9e3cd;background:#f5fff9}.person.present .status{background:#dff5e9;color:var(--green)}.person.present .name{color:#155e3d}
+.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:19px}button{border:0;border-radius:10px;padding:12px 14px;font-weight:bold;cursor:pointer;font-size:13px}
+.primary{background:var(--wine);color:white;flex:1}.secondary{background:white;color:var(--wine);border:1px solid #d9c5ce}.danger{background:#fff0f0;color:#a32828}
+.note{font-size:12px;line-height:1.5;color:var(--muted);background:#fff9eb;border:1px solid #f1dfb2;padding:12px;border-radius:10px;margin-top:15px}
+.history{margin-top:21px;background:white;padding:14px;border-radius:12px;overflow-x:auto}.history h2{font-size:16px;margin:0 0 10px}
+table{width:100%;border-collapse:collapse;font-size:12px}th,td{padding:8px 5px;border-bottom:1px solid #eee;text-align:left;vertical-align:top}th{color:var(--muted)}.empty{font-size:13px;color:var(--muted)}
+footer{text-align:center;color:var(--muted);font-size:11px;padding:8px 10px 20px}
+@media(min-width:600px){.people{display:grid;grid-template-columns:1fr 1fr;gap:0 12px}}
+@media print{.actions,.note,footer{display:none}body{background:white}}
+</style>
+</head>
+<body>
+<header><div class="brand">D'WINE FAMILY</div><h1>ABSENSI PULANG KERJA</h1><p>REFLEXOLOGY • DURI</p></header>
+<main>
+<section class="clock"><div class="date" id="today">Memuat tanggal…</div><div class="time" id="now">--:--:--</div><div class="date">Jam mengikuti waktu pada HP/perangkat ini</div></section>
+<section class="stats"><div class="stat"><strong id="total">11</strong><span>Total Karyawan</span></div><div class="stat"><strong id="count">0</strong><span>Sudah Absen Pulang</span></div><div class="stat"><strong id="left">11</strong><span>Belum Absen Pulang</span></div></section>
+<div class="group"><h2>Terapis Laki-laki</h2><div class="people" id="male"></div></div>
+<div class="group"><h2>Terapis Perempuan</h2><div class="people" id="female"></div></div>
+<div class="group"><h2>Kasir</h2><div class="people" id="cashier"></div></div>
+<div class="actions">
+<button class="primary" onclick="downloadCSV()">Unduh Rekap CSV</button>
+<button class="secondary" onclick="window.print()">Cetak Rekap</button>
+<button class="danger" onclick="resetToday()">Reset Absensi Pulang</button>
+</div>
+<div class="note"><b>Catatan:</b> Centang nama saat karyawan benar-benar pulang. Tanggal dan jam pulang dicatat otomatis pada saat centang. Data tersimpan di browser/perangkat ini; gunakan perangkat dan browser yang sama. Pastikan jam dan tanggal HP benar. Unduh rekap CSV sebagai cadangan.</div>
+<section class="history"><h2>Rekap Pulang Hari Ini</h2><div id="tableWrap" class="empty">Belum ada karyawan yang absen pulang.</div></section>
+</main><footer>D'WINE FAMILY REFLEXOLOGY • Absensi Pulang Karyawan</footer>
+<script>
+const staff=[
+{name:"Pak Alam",group:"male"},{name:"Pak Alkan",group:"male"},{name:"Pak Amron",group:"male"},
+{name:"Siti",group:"female"},{name:"Mega",group:"female"},{name:"Lina",group:"female"},{name:"Diana",group:"female"},{name:"Viola",group:"female"},{name:"Ida",group:"female"},{name:"Buk Marni",group:"female"},
+{name:"Olivia",group:"cashier"}
+];
+const KEY="dwine_absensi_pulang_v1";let records={};
+function dayKey(d=new Date()){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`}
+function dateText(d){return new Intl.DateTimeFormat("id-ID",{weekday:"long",day:"numeric",month:"long",year:"numeric"}).format(d)}
+function timeText(d){return new Intl.DateTimeFormat("id-ID",{hour:"2-digit",minute:"2-digit",second:"2-digit",hour12:false}).format(d)}
+function load(){try{let s=JSON.parse(localStorage.getItem(KEY)||"{}");records=s.date===dayKey()?(s.records||{}):{}}catch(e){records={}}}
+function save(){localStorage.setItem(KEY,JSON.stringify({date:dayKey(),records}))}
+function renderStaff(){
+ ["male","female","cashier"].forEach(g=>{
+  const el=document.getElementById(g);el.innerHTML="";
+  staff.filter(s=>s.group===g).forEach(s=>{
+   const r=records[s.name],id="out_"+staff.indexOf(s),card=document.createElement("div");
+   card.className="person"+(r?" present":"");
+   card.innerHTML=`<input type="checkbox" id="${id}" ${r?"checked":""} aria-label="Absen pulang ${s.name}"><label for="${id}"><span class="name">${s.name}</span><span class="detail">${r?`Pulang: ${r.date} • ${r.time}`:"Belum absen pulang"}</span></label><span class="status">${r?"SUDAH PULANG":"BELUM ABSEN"}</span>`;
+   card.querySelector("input").addEventListener("change",e=>{
+    if(e.target.checked){if(!records[s.name]){const n=new Date();records[s.name]={date:dateText(n),time:timeText(n),iso:n.toISOString()}}}
+    else{if(!confirm(`Batalkan absensi pulang ${s.name}?`)){e.target.checked=true;return}delete records[s.name]}
+    save();renderStaff();renderStats();renderTable();
+   });
+   el.appendChild(card);
+  });
+ });
+}
+function renderStats(){let n=Object.keys(records).length;document.getElementById("total").textContent=staff.length;document.getElementById("count").textContent=n;document.getElementById("left").textContent=staff.length-n}
+function renderTable(){
+ const list=staff.filter(s=>records[s.name]),el=document.getElementById("tableWrap");
+ if(!list.length){el.className="empty";el.textContent="Belum ada karyawan yang absen pulang.";return}
+ el.className="";let h="<table><thead><tr><th>Nama</th><th>Bagian</th><th>Tanggal Pulang</th><th>Jam Pulang</th></tr></thead><tbody>";
+ list.forEach(s=>{let r=records[s.name],g=s.group==="male"?"Terapis laki-laki":s.group==="female"?"Terapis perempuan":"Kasir";h+=`<tr><td>${s.name}</td><td>${g}</td><td>${r.date}</td><td>${r.time}</td></tr>`});
+ el.innerHTML=h+"</tbody></table>";
+}
+function tick(){const d=new Date();document.getElementById("today").textContent=dateText(d);document.getElementById("now").textContent=timeText(d);if(window.lastDay&&window.lastDay!==dayKey()){load();renderStaff();renderStats();renderTable()}window.lastDay=dayKey()}
+function resetToday(){if(!confirm("Yakin menghapus semua absensi pulang hari ini?"))return;records={};save();renderStaff();renderStats();renderTable()}
+function downloadCSV(){
+ const rows=[["Nama Karyawan","Bagian","Tanggal Pulang","Jam Pulang","Status"]];
+ staff.forEach(s=>{let r=records[s.name];rows.push([s.name,s.group==="male"?"Terapis laki-laki":s.group==="female"?"Terapis perempuan":"Kasir",r?r.date:"-",r?r.time:"-",r?"Sudah absen pulang":"Belum absen pulang"])});
+ const csv="\uFEFF"+rows.map(row=>row.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(",")).join("\r\n");
+ const blob=new Blob([csv],{type:"text/csv;charset=utf-8;"}),url=URL.createObjectURL(blob),a=document.createElement("a");
+ a.href=url;a.download=`absensi-pulang-dwine-${dayKey()}.csv`;document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url)
+}
+load();tick();renderStaff();renderStats();renderTable();setInterval(tick,1000);
+</script>
+</body>
+</html>
