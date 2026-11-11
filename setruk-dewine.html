@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>D'WINE FAMILY - Dashboard Kasir</title>
+<style>
+:root{--blue:#07558f;--blue2:#1264ae;--red:#b71920;--ink:#174f78;--bg:#f5f6f8}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:Arial,Helvetica,sans-serif;color:#222}
+.topbar{height:74px;background:var(--blue);color:white;display:flex;align-items:center;justify-content:space-between;padding:0 22px;box-shadow:0 2px 5px #0002}
+.topbar button{background:none;color:#fff;border:0;font-size:28px;padding:7px;cursor:pointer}.topicons{display:flex;gap:20px;align-items:center}.topicons button{font-size:24px}
+.wrap{max-width:900px;margin:auto;padding:20px 14px 35px}
+.noads{display:inline-block;background:var(--red);color:white;border-radius:7px;padding:10px 26px;font-weight:bold;letter-spacing:1px;margin:5px 0 25px}
+.hero{text-align:center;margin:0 auto 28px}.big-action{width:190px;height:190px;border-radius:50%;border:0;background:var(--red);color:white;font-size:65px;box-shadow:0 3px 5px #0001;cursor:pointer}
+.big-action:active,.circle:active,.shortcut:active{transform:scale(.97)}
+.primary-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;max-width:690px;margin:0 auto 38px}
+.primary-item{text-align:center;color:var(--ink);font-size:25px}
+.circle{width:126px;height:126px;border-radius:50%;border:0;background:var(--blue2);color:#fff;font-size:45px;cursor:pointer;margin-bottom:10px}
+.shortcuts{display:flex;gap:13px;overflow-x:auto;padding:0 0 12px;margin:0 -4px 20px;scrollbar-width:thin}
+.shortcut{flex:0 0 105px;text-align:center;color:var(--ink);font-size:18px;cursor:pointer}
+.shortcut:nth-child(even){color:var(--red)}
+.shortcut .sq{height:64px;border-radius:9px;background:var(--blue2);color:white;display:flex;align-items:center;justify-content:center;font-size:35px;margin-bottom:8px;box-shadow:0 1px 2px #0002}
+.shortcut:nth-child(even) .sq{background:var(--red)}
+.date{text-align:center;color:var(--ink);font-size:25px;margin:20px 0 18px}
+.chartbox{background:#fff;padding:18px 12px 24px;border:1px solid #ddd;border-radius:8px;overflow:hidden}
+.chart{display:grid;grid-template-columns:75px 1fr;gap:8px;min-height:320px}
+.axis{display:flex;flex-direction:column;justify-content:space-between;text-align:right;color:#555;font-size:12px;padding:10px 0 30px}
+.plot{position:relative;border-left:1px solid #aaa;border-bottom:1px solid #aaa;background:repeating-linear-gradient(to right,transparent 0,transparent calc(16.66% - 1px),#ccc calc(16.66% - 1px),#ccc 16.66%)}
+.scale{position:absolute;top:-22px;left:0;right:0;display:flex;justify-content:space-between;font-size:12px}
+.bars{position:absolute;top:24px;left:0;right:0;display:flex;flex-direction:column;gap:8px}
+.barline{display:flex;align-items:center;height:36px;gap:8px}
+.bar{height:100%;min-width:2px;border-radius:0 2px 2px 0}
+.barval{font-size:12px;white-space:nowrap}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin:16px 0 0 84px;font-size:12px;color:#555}
+.dot{display:inline-block;width:12px;height:12px;margin-right:5px;vertical-align:-2px}
+.page{display:none;background:#fff;border:1px solid #ddd;border-radius:10px;padding:18px;margin-top:16px}
+.page.active{display:block}.page h2{color:var(--ink);margin:0 0 14px}
+.btn{border:0;border-radius:7px;padding:11px 15px;font-weight:bold;background:#e8e8e8;cursor:pointer}.btn.blue{background:var(--blue2);color:#fff}.btn.red{background:var(--red);color:#fff}
+input,select{padding:10px;border:1px solid #ccc;border-radius:6px;font:inherit;max-width:100%}
+.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.field label{display:block;font-size:13px;color:#555;margin:8px 0 5px}
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}td,th{text-align:left;padding:9px 5px;border-bottom:1px solid #eee}
+.menu-panel{display:none;position:absolute;top:74px;left:0;background:#fff;width:min(300px,85vw);padding:12px;box-shadow:0 5px 16px #0003;z-index:5}
+.menu-panel.open{display:block}.menu-panel button{display:block;width:100%;text-align:left;padding:13px;border:0;background:#fff;font-size:16px;color:#174f78}
+.hint{font-size:13px;color:#666;line-height:1.5}.total{font-size:22px;font-weight:bold;text-align:right;color:var(--red)}
+@media(max-width:520px){.topbar{height:68px}.wrap{padding:16px 10px}.big-action{width:165px;height:165px}.primary-item{font-size:20px}.circle{width:105px;height:105px;font-size:38px}.primary-grid{gap:4px;margin-bottom:28px}.shortcut{flex-basis:92px;font-size:16px}.shortcut .sq{height:58px}.date{font-size:22px}.chart{grid-template-columns:56px 1fr}.legend{margin-left:60px}.formgrid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header class="topbar">
+ <button aria-label="Menu" onclick="toggleMenu()">☰</button>
+ <div class="topicons"><button title="Profil" onclick="showPage('profil')">♟</button><button title="Bantuan" onclick="alert('Bantuan Kasir D’WINE FAMILY')">❔</button><button title="Pengaturan" onclick="showPage('pengaturan')">⚙</button></div>
+</header>
+<nav class="menu-panel" id="menu">
+ <button onclick="goHome()">⌂ &nbsp; Dashboard</button><button onclick="showPage('transaksi')">▣ &nbsp; Transaksi</button><button onclick="showPage('produk')">♟ &nbsp; Produk</button><button onclick="showPage('pelanggan')">♙ &nbsp; Pelanggan</button><button onclick="showPage('laporan')">▥ &nbsp; Laporan</button><button onclick="showPage('pengeluaran')">▤ &nbsp; Pengeluaran</button>
+</nav>
+<main class="wrap">
+<div id="home">
+ <div class="noads">TANPA IKLAN</div>
+ <div class="hero"><button class="big-action" onclick="showPage('transaksi')" aria-label="Transaksi baru">🛒</button></div>
+ <div class="primary-grid">
+  <div class="primary-item"><button class="circle" onclick="showPage('transaksi')">▣</button><div>Transaksi</div></div>
+  <div class="primary-item"><button class="circle" onclick="showPage('transaksi')">🚴</button><div>Cepat</div></div>
+  <div class="primary-item"><button class="circle" onclick="showPage('laporan')">▥</button><div>Laporan</div></div>
+ </div>
+ <div class="shortcuts">
+  <div class="shortcut" onclick="showPage('produk')"><div class="sq">♟</div>Produk</div>
+  <div class="shortcut" onclick="showPage('pelanggan')"><div class="sq">♙</div>Pelanggan</div>
+  <div class="shortcut" onclick="showPage('master')"><div class="sq">✿</div>Master</div>
+  <div class="shortcut" onclick="showPage('arus')"><div class="sq">▤</div>Arus Kas</div>
+  <div class="shortcut" onclick="showPage('pengeluaran')"><div class="sq">▣</div>Pengeluaran</div>
+  <div class="shortcut" onclick="showPage('produk')"><div class="sq">▦</div>Katalog</div>
+ </div>
+ <div class="date" id="today"></div>
+ <div class="chartbox">
+  <div class="chart"><div class="axis"><span>600K</span><span>400K</span><span>200K</span><span>0</span></div>
+   <div class="plot"><div class="scale"><span>100K</span><span>200K</span><span>300K</span><span>400K</span><span>500K</span><span>600K</span></div>
+    <div class="bars"><div class="barline"><div class="bar" style="width:82%;background:#ef5350"></div><span class="barval">—</span></div><div class="barline"><div class="bar" style="width:18%;background:#66bb6a"></div><span class="barval">—</span></div><div class="barline"><div class="bar" style="width:12%;background:#ffeb3b"></div><span class="barval">—</span></div><div class="barline"><div class="bar" style="width:7%;background:#bdbdbd"></div><span class="barval">—</span></div></div>
+   </div>
+  </div>
+  <div class="legend"><span><i class="dot" style="background:#ef5350"></i>Refleksi</span><span><i class="dot" style="background:#66bb6a"></i>Massage</span><span><i class="dot" style="background:#ffeb3b"></i>Pijat</span><span><i class="dot" style="background:#bdbdbd"></i>Lainnya</span></div>
+  <p class="hint">Grafik contoh tampilan. Angka laporan akan terisi setelah fitur transaksi dan penyimpanan penjualan digunakan.</p>
+ </div>
+</div>
+<section class="page" id="transaksi"><h2>Transaksi Baru</h2>
+ <div class="formgrid"><div class="field"><label>Nama pelanggan</label><input id="customer" placeholder="Nama pelanggan"></div><div class="field"><label>Nama terapis</label><input id="therapist" value="Alam"></div></div>
+ <div class="field"><label>Pilih produk</label><select id="productSelect"></select></div><button class="btn blue" onclick="addToCart()">+ Tambah Produk</button>
+ <table><thead><tr><th>Produk</th><th>Qty</th><th>Jumlah</th></tr></thead><tbody id="cart"></tbody></table>
+ <div class="total" id="cartTotal">Total: Rp 0</div><p><button class="btn blue" onclick="finishSale()">SIMPAN TRANSAKSI</button> <button class="btn" onclick="window.print()">CETAK</button></p>
+ <p class="hint">Catatan: ini versi dashboard awal. Data produk disimpan di browser HP.</p>
+</section>
+<section class="page" id="produk"><h2>Produk</h2><div class="formgrid"><div class="field"><label>Nama produk / treatment</label><input id="newProduct" placeholder="Nama produk"></div><div class="field"><label>Harga (Rp)</label><input id="newPrice" type="number" placeholder="100000"></div></div><p><button class="btn blue" onclick="saveProduct()">SIMPAN PRODUK</button></p><div id="products"></div></section>
+<section class="page" id="laporan"><h2>Laporan</h2><p id="reportText">Belum ada transaksi tersimpan.</p><button class="btn" onclick="renderReport()">PERBARUI LAPORAN</button></section>
+<section class="page" id="pelanggan"><h2>Pelanggan</h2><p class="hint">Catatan pelanggan akan ditambahkan pada pengembangan berikutnya.</p></section>
+<section class="page" id="master"><h2>Master Data</h2><p class="hint">Menu pengaturan data utama usaha.</p></section>
+<section class="page" id="arus"><h2>Arus Kas</h2><p class="hint">Menu pencatatan uang masuk dan keluar.</p></section>
+<section class="page" id="pengeluaran"><h2>Pengeluaran</h2><p class="hint">Menu pencatatan biaya operasional.</p></section>
+<section class="page" id="pengaturan"><h2>Pengaturan</h2><p class="hint">D'WINE FAMILY REFLEXOLOGY</p><button class="btn" onclick="goHome()">Kembali ke Dashboard</button></section>
+<section class="page" id="profil"><h2>Profil Usaha</h2><p>D'WINE FAMILY REFLEXOLOGY</p></section>
+</main>
+<script>
+const $=id=>document.getElementById(id);let products=JSON.parse(localStorage.getItem('dwine_dash_products')||'[]'),sales=JSON.parse(localStorage.getItem('dwine_dash_sales')||'[]'),cart=[];
+function money(n){return 'Rp '+Number(n||0).toLocaleString('id-ID')}
+function toggleMenu(){$('menu').classList.toggle('open')}
+function hidePages(){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));$('home').style.display='none';$('menu').classList.remove('open')}
+function showPage(id){hidePages();$(id).classList.add('active');if(id==='produk')renderProducts();if(id==='transaksi')renderSelect()}
+function goHome(){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));$('home').style.display='block';$('menu').classList.remove('open')}
+function saveProduct(){let n=$('newProduct').value.trim(),p=Number($('newPrice').value);if(!n||$('newPrice').value==='')return alert('Isi nama dan harga produk.');products.push({id:Date.now()+Math.random(),name:n,price:p});localStorage.setItem('dwine_dash_products',JSON.stringify(products));$('newProduct').value='';$('newPrice').value='';renderProducts();renderSelect()}
+function renderProducts(){$('products').innerHTML=products.length?products.map((p,i)=>`<p>${p.name} — <b>${money(p.price)}</b> <button class="btn" onclick="deleteProduct(${i})">Hapus</button></p>`).join(''):'<p class="hint">Belum ada produk.</p>'}
+function deleteProduct(i){products.splice(i,1);localStorage.setItem('dwine_dash_products',JSON.stringify(products));renderProducts();renderSelect()}
+function renderSelect(){$('productSelect').innerHTML='<option value="">-- Pilih produk --</option>'+products.map(p=>`<option value="${p.id}">${p.name} — ${money(p.price)}</option>`).join('')}
+function addToCart(){let p=products.find(x=>String(x.id)===$('productSelect').value);if(!p)return alert('Pilih produk dulu.');cart.push({...p,qty:1});renderCart()}
+function renderCart(){$('cart').innerHTML=cart.map((p,i)=>`<tr><td>${p.name}</td><td>${p.qty}</td><td>${money(p.price*p.qty)} <button class="btn" onclick="cart.splice(${i},1);renderCart()">×</button></td></tr>`).join('');$('cartTotal').textContent='Total: '+money(cart.reduce((a,p)=>a+p.price*p.qty,0))}
+function finishSale(){if(!cart.length)return alert('Belum ada produk dalam transaksi.');let total=cart.reduce((a,p)=>a+p.price*p.qty,0);sales.push({date:new Date().toISOString(),customer:$('customer').value,therapist:$('therapist').value,items:cart,total});localStorage.setItem('dwine_dash_sales',JSON.stringify(sales));alert('Transaksi disimpan. Total '+money(total));cart=[];renderCart();renderReport()}
+function renderReport(){let total=sales.reduce((a,s)=>a+s.total,0);$('reportText').textContent='Jumlah transaksi: '+sales.length+' | Total penjualan: '+money(total)}
+$('today').textContent=new Date().toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'});renderSelect();renderReport();
+</script></body></html>
