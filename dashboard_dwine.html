@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#17251f">
+  <title>D'WINE FAMILY REFLEXOLOGY</title>
+  <style>
+    :root {
+      --deep: #17251f;
+      --green: #254b3b;
+      --gold: #d8b56d;
+      --cream: #f7f3e9;
+      --muted: #c9d4cc;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; min-height: 100vh; color: var(--cream);
+      font-family: Arial, Helvetica, sans-serif;
+      background:
+        radial-gradient(circle at 15% 10%, rgba(216,181,109,.18), transparent 32%),
+        linear-gradient(145deg, #101a16, #203d30 58%, #101a16);
+      display: flex; align-items: center; justify-content: center;
+      padding: 22px;
+    }
+    .dashboard {
+      width: min(100%, 760px); overflow: hidden; border-radius: 26px;
+      border: 1px solid rgba(216,181,109,.45);
+      background: rgba(18,31,25,.94);
+      box-shadow: 0 24px 70px rgba(0,0,0,.4);
+    }
+    header { text-align: center; padding: 38px 24px 28px; }
+    .mark {
+      width: 76px; height: 76px; margin: 0 auto 18px; border-radius: 50%;
+      display: grid; place-items: center; color: var(--gold);
+      border: 1px solid var(--gold); font-size: 30px;
+      background: rgba(216,181,109,.08);
+    }
+    .eyebrow { color: var(--gold); letter-spacing: 4px; font-size: 11px; font-weight: 700; }
+    h1 { margin: 12px 0 8px; font-family: Georgia, serif; font-size: clamp(27px, 6vw, 42px); letter-spacing: 1px; }
+    .tagline { color: var(--muted); line-height: 1.65; margin: 0 auto; max-width: 510px; }
+    .rule { height: 1px; background: linear-gradient(90deg, transparent, rgba(216,181,109,.65), transparent); margin: 0 28px; }
+    main { padding: 28px clamp(20px, 6vw, 48px) 38px; }
+    .intro { text-align: center; line-height: 1.7; color: #e5e8df; margin: 0 auto 26px; max-width: 560px; }
+    .panel {
+      border: 1px solid rgba(216,181,109,.35); border-radius: 20px;
+      padding: 24px; background: linear-gradient(135deg, rgba(37,75,59,.58), rgba(20,34,27,.8));
+    }
+    .panel h2 { margin: 0 0 8px; font-size: 19px; text-align: center; }
+    .panel .sub { text-align: center; color: var(--muted); font-size: 13px; margin: 0 0 22px; }
+    .controls { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; }
+    button {
+      border: 0; border-radius: 999px; padding: 13px 22px; min-width: 145px;
+      font-size: 14px; font-weight: 700; cursor: pointer; transition: transform .15s, opacity .15s;
+    }
+    button:active { transform: scale(.97); }
+    button:disabled { opacity: .45; cursor: not-allowed; }
+    .play { background: var(--gold); color: #1d251e; }
+    .stop { background: transparent; color: var(--cream); border: 1px solid rgba(255,255,255,.38); }
+    .volume { display: flex; align-items: center; gap: 12px; max-width: 330px; margin: 22px auto 0; color: var(--muted); font-size: 13px; }
+    input[type="range"] { width: 100%; accent-color: var(--gold); }
+    .status { text-align: center; margin: 17px 0 0; min-height: 18px; color: var(--gold); font-size: 12px; }
+    footer { text-align: center; padding: 0 18px 25px; color: #9eafa4; font-size: 11px; letter-spacing: 1px; }
+    @media (max-width: 420px) { button { width: 100%; } .panel { padding: 20px 16px; } }
+  </style>
+</head>
+<body>
+  <div class="dashboard">
+    <header>
+      <div class="mark" aria-hidden="true">✦</div>
+      <div class="eyebrow">WELCOME TO</div>
+      <h1>D'WINE FAMILY<br>REFLEXOLOGY</h1>
+      <p class="tagline">Jasa Layanan Pijat Refleksi Keluarga<br>untuk Kesehatan dan Kebugaran</p>
+    </header>
+    <div class="rule"></div>
+    <main>
+      <p class="intro">
+        Nikmati suasana nyaman dan relaksasi bersama D'WINE FAMILY REFLEXOLOGY.
+        Luangkan waktu untuk merawat tubuh, menyegarkan pikiran, dan menjaga kebugaran.
+      </p>
+      <section class="panel" aria-label="Pemutar audio iklan D'WINE">
+        <h2>♪ AUDIO IKLAN D'WINE</h2>
+        <p class="sub">Tekan putar untuk mendengarkan audio iklan kami</p>
+        <audio id="dwineAudio" preload="none">
+          <source src="https://mustaintain3-cell.github.io/Alam/IKLAN_DWINE.mp3" type="audio/mpeg">
+          Browser Anda tidak mendukung pemutar audio.
+        </audio>
+        <div class="controls">
+          <button class="play" id="playBtn" type="button">▶ PUTAR IKLAN</button>
+          <button class="stop" id="stopBtn" type="button">■ STOP IKLAN</button>
+        </div>
+        <label class="volume" for="volume">
+          <span>🔉 Volume</span>
+          <input id="volume" type="range" min="0" max="1" step="0.05" value="0.8">
+        </label>
+        <p class="status" id="status" role="status" aria-live="polite">Audio siap diputar</p>
+      </section>
+    </main>
+    <footer>KENYAMANAN • KESEHATAN • KEBUGARAN</footer>
+  </div>
+  <script>
+    const audio = document.getElementById('dwineAudio');
+    const playBtn = document.getElementById('playBtn');
+    const stopBtn = document.getElementById('stopBtn');
+    const volume = document.getElementById('volume');
+    const statusText = document.getElementById('status');
+
+    audio.volume = Number(volume.value);
+    playBtn.addEventListener('click', async () => {
+      try {
+        await audio.play();
+        statusText.textContent = 'Iklan D’WINE sedang diputar';
+      } catch (error) {
+        statusText.textContent = 'Audio belum dapat diputar. Periksa koneksi internet atau link MP3.';
+      }
+    });
+    stopBtn.addEventListener('click', () => {
+      audio.pause();
+      audio.currentTime = 0;
+      statusText.textContent = 'Audio dihentikan';
+    });
+    volume.addEventListener('input', () => {
+      audio.volume = Number(volume.value);
+    });
+    audio.addEventListener('ended', () => {
+      statusText.textContent = 'Audio iklan selesai diputar';
+    });
+    audio.addEventListener('error', () => {
+      statusText.textContent = 'Audio gagal dimuat. Periksa alamat file MP3 di GitHub.';
+    });
+  </script>
+</body>
+</html>
